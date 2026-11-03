@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Celestial Recall Timer</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f5ff;
+  font-family: 'Segoe UI', sans-serif;
+  color: #49316d;
+}
+
+.timer-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 35px 25px;
+  text-align: center;
+  background: linear-gradient(145deg, #ffffff, #eee5ff);
+  border: 1px solid #d9c8fa;
+  border-radius: 28px;
+  box-shadow: 0 12px 40px #7651a322;
+}
+
+.stars {
+  font-size: 22px;
+  color: #a17bdb;
+  letter-spacing: 12px;
+}
+
+h2 {
+  font-size: 19px;
+  letter-spacing: 3px;
+  margin: 15px 0 5px;
+  color: #69469b;
+}
+
+.subtitle {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #9a83bd;
+}
+
+.timer {
+  font-size: clamp(45px, 12vw, 64px);
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin: 30px 0 10px;
+  color: #69469b;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background: #dfd1f5;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 20px 0 30px;
+}
+
+.progress {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #a987e5, #7046aa);
+  border-radius: 20px;
+  transition: width 0.3s linear;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+button {
+  border: none;
+  border-radius: 30px;
+  padding: 12px 25px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.start {
+  background: #7651a8;
+  color: white;
+}
+
+.pause {
+  background: #e5d8f8;
+  color: #69469b;
+}
+
+.reset {
+  background: #f1eafa;
+  color: #876ba9;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  opacity: 0.85;
+}
+
+.status {
+  margin-top: 25px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #967bb8;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="timer-card">
+
+  <div class="stars">✦ ˚ ✧</div>
+
+  <h2>RECALL SESSION</h2>
+  <div class="subtitle">FOCUS • REMEMBER • MASTER</div>
+
+  <div class="timer" id="timer">01:30:00</div>
+
+  <div class="progress-container">
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <div class="buttons">
+    <button class="start" onclick="startTimer()">START</button>
+    <button class="pause" onclick="pauseTimer()">PAUSE</button>
+    <button class="reset" onclick="resetTimer()">RESET</button>
+  </div>
+
+  <div class="status" id="status">
+    ✧ READY WHEN YOU ARE ✧
+  </div>
+
+</div>
+
+<script>
+const TOTAL = 90 * 60;
+let remaining = TOTAL;
+let endTime = null;
+let interval = null;
+
+const timer = document.getElementById("timer");
+const progress = document.getElementById("progress");
+const status = document.getElementById("status");
+
+function updateDisplay() {
+  const hours = Math.floor(remaining / 3600);
+  const minutes = Math.floor((remaining % 3600) / 60);
+  const seconds = remaining % 60;
+
+  timer.textContent =
+    String(hours).padStart(2, "0") + ":" +
+    String(minutes).padStart(2, "0") + ":" +
+    String(seconds).padStart(2, "0");
+
+  progress.style.width =
+    (remaining / TOTAL * 100) + "%";
+}
+
+function startTimer() {
+  if (interval || remaining <= 0) return;
+
+  endTime = Date.now() + remaining * 1000;
+  status.textContent = "✦ YOU'RE DOING GREAT. KEEP GOING ✦";
+
+  interval = setInterval(() => {
+    remaining = Math.max(
+      0,
+      Math.ceil((endTime - Date.now()) / 1000)
+    );
+
+    updateDisplay();
+
+    if (remaining <= 0) {
+      clearInterval(interval);
+      interval = null;
+      status.textContent = "✧ SESSION COMPLETE! WELL DONE! ✧";
+      document.title = "Recall Complete!";
+      alert("Your 90-minute recall session is complete! 💜");
+    }
+  }, 250);
+}
+
+function pauseTimer() {
+  if (!interval) return;
+
+  clearInterval(interval);
+  interval = null;
+  remaining = Math.max(
+    0,
+    Math.ceil((endTime - Date.now()) / 1000)
+  );
+
+  updateDisplay();
+  status.textContent = "✧ TIMER PAUSED ✧";
+}
+
+function resetTimer() {
+  clearInterval(interval);
+  interval = null;
+  remaining = TOTAL;
+  document.title = "Celestial Recall Timer";
+  updateDisplay();
+  status.textContent = "✧ READY WHEN YOU ARE ✧";
+}
+
+updateDisplay();
+</script>
+
+</body>
+</html>
